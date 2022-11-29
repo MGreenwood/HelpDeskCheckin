@@ -1,0 +1,26 @@
+<head>
+  <title>IT Check In</title>
+</head>
+<link rel="stylesheet" href="/static/css/styles.css">
+<div class="center">
+    <div class="center center-text">
+        <img alt="logo" src="/static/logo.png" width="240" height="200"> 
+    </div><br><br>
+    <div class="title center-text">
+        <h1>Help Desk Check-In</h1>
+    </div>
+    <div class="heavy-vertical-padding center-text">
+        <div>
+            <h2>
+                Please scan your ID
+            </h2>
+        </div>
+        <form action="/checkin" method="post">
+            <input type="text" id="id" name="id" width="240" autofocus><br><br>
+            <div class="right-justify">
+                <input type="submit" value="Submit">
+            </div>
+
+        </form>
+    </div>
+</div>

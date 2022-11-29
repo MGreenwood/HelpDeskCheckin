@@ -1,0 +1,18 @@
+<head>
+  <title>IT Check In</title>
+</head>
+<link rel="stylesheet" href="/static/css/styles.css">
+<div class="center-text welcome-message">
+    {{ if eq .StudentInfo.FName "" }}
+        Couldn't find the student.
+    {{ else }}
+        Welcome to the help desk, {{ .StudentInfo.FName }}
+    {{ end }}
+</div>
+<div class="flex-options-items">
+    {{ range $option := .Options}}
+        <div class="option-item" onclick="location.href='/checkin/confirm-visit'";>
+            {{$option}}
+        </div>
+    {{ end }}
+</div>
