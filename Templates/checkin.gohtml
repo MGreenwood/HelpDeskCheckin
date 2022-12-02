@@ -4,9 +4,9 @@
 <link rel="stylesheet" href="/static/css/styles.css">
 <div class="center-text welcome-message">
     {{ if eq .StudentInfo.FName "" }}
-        Couldn't find the student.
+        Couldn\'t find the student.
     {{ else }}
-        Welcome to the help desk, {{ .StudentInfo.FName }}
+        Welcome to the help desk, {{ .StudentInfo.FName }}, ID# {{.StudentId}}
     {{ end }}
 </div>
 <div class="flex-options-items dropdown">
@@ -14,8 +14,8 @@
         <div class="option-item drop-button" onclick="dropdown({{$option}})";>
             {{$option}}
             <div id="{{$option}}" class="dropdown-content">
-                {{ range $r := $reasons}}
-                    <div class="option-item" onclick="location.href='/checkin/confirm-visit'">{{ $r }}</div>
+                {{ range $index, $r := $reasons}}
+                    <div class="option-item" onclick="location.href='/checkin/confirm-visit/{{$option}}/{{$index}}/{{$.StudentId}}'">{{ $r }}</div>
                 {{ end }}
             </div>
         </div>

@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"website/database"
 
 	"github.com/gin-gonic/contrib/static"
@@ -26,8 +27,8 @@ func main() {
 	LoadStudentList()
 	options = map[string][]string{
 		"Borrow a device": {"Forgot device at home", "Forgot charger at home", "Lost Charger"},
-		"IT Help": {"Software Install", "Wifi help", "Other"},
-		"Broken Device": {"Broken Screen", "Won't turn on/charge", "Broken elsewhere"},
+		"IT Help":         {"Software Install", "Wifi help", "Other"},
+		"Broken Device":   {"Broken Screen", "Won't turn on/charge", "Broken elsewhere"},
 	}
 	database.Init("../HelpdeskCheckinDatabase.db")
 
@@ -44,7 +45,7 @@ func main() {
 	// setup public routes
 	router.GET("/", IndexHandler)
 	router.POST("/checkin", CheckinHandler)
-	router.GET("/checkin/confirm-visit", ConfirmationPage)
+	router.GET("/checkin/confirm-visit/*option", ConfirmationPage)
 
 	router.Run("localhost:8080")
 }
@@ -66,19 +67,26 @@ func CheckinHandler(c *gin.Context) {
 		IndexHandler(c)
 		return
 	}
-
 	c.HTML(
 		http.StatusOK,
 		"checkin.gohtml",
 		gin.H{
 			"StudentInfo": studentList[id],
 			"Options":     options,
-			"Id":          id,
+			"StudentId":   id,
 		},
 	)
 }
 
 func ConfirmationPage(c *gin.Context) {
+	// option - index in that option - id #
+	params := strings.Split(c.Param("option"), "/")
+	option := params[1]
+	ndx := params[2]
+	id := params[3]
+
+	print("option:" + option + " index: " + ndx + " id:" + id)
+
 	c.HTML(
 		http.StatusOK,
 		"confirm-checkin.gohtml",
