@@ -9,10 +9,16 @@
         Welcome to the help desk, {{ .StudentInfo.FName }}
     {{ end }}
 </div>
-<div class="flex-options-items">
-    {{ range $option := .Options}}
-        <div class="option-item" onclick="location.href='/checkin/confirm-visit'";>
+<div class="flex-options-items dropdown">
+    {{ range $option, $reasons := .Options}}
+        <div class="option-item drop-button" onclick="dropdown({{$option}})";>
             {{$option}}
+            <div id="{{$option}}" class="dropdown-content">
+                {{ range $r := $reasons}}
+                    <div class="option-item" onclick="location.href='/checkin/confirm-visit'">{{ $r }}</div>
+                {{ end }}
+            </div>
         </div>
     {{ end }}
 </div>
+<script type="text/javascript" src="../static/scripts/animations.js"></script>

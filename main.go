@@ -18,13 +18,17 @@ type Student struct {
 }
 
 var studentList map[string]Student
-var options [4]string
+var options map[string][]string
 
 func main() {
 	// load student data
 	studentList = make(map[string]Student)
 	LoadStudentList()
-	options = [...]string{"Borrow a laptop", "Connect to Wifi", "IT Help", "Broken Device"}
+	options = map[string][]string{
+		"Borrow a device": {"Forgot device at home", "Forgot charger at home", "Lost Charger"},
+		"IT Help": {"Software Install", "Wifi help", "Other"},
+		"Broken Device": {"Broken Screen", "Won't turn on/charge", "Broken elsewhere"},
+	}
 	database.Init("../HelpdeskCheckinDatabase.db")
 
 	// Set the router as the default one shipped with Gin
@@ -35,14 +39,14 @@ func main() {
 
 	// Serve frontend static files
 	router.Use(static.Serve("/static", static.LocalFile("./static", true)))
-	router.StaticFile("/favicon.ico", ".static/favicon.ico")
+	router.StaticFile("/favicon.ico", "./static/favicon.ico")
 
 	// setup public routes
 	router.GET("/", IndexHandler)
 	router.POST("/checkin", CheckinHandler)
 	router.GET("/checkin/confirm-visit", ConfirmationPage)
 
-	router.Run(":8080")
+	router.Run("localhost:8080")
 }
 
 func IndexHandler(c *gin.Context) {
