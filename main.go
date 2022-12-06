@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"website/database"
 
 	"github.com/gin-gonic/contrib/static"
@@ -18,14 +20,12 @@ type Student struct {
 }
 
 var studentList map[string]Student
-var options [4]string
 
 func main() {
 	// load student data
 	studentList = make(map[string]Student)
 	LoadStudentList()
-	options = [...]string{"Borrow a laptop", "Connect to Wifi", "IT Help", "Broken Device"}
-	database.Init("../HelpdeskCheckinDatabase.db")
+	database.Init("./HelpDeskCheckInDatabase.db")
 
 	// Set the router as the default one shipped with Gin
 	router := gin.Default()
@@ -35,12 +35,12 @@ func main() {
 
 	// Serve frontend static files
 	router.Use(static.Serve("/static", static.LocalFile("./static", true)))
-	router.StaticFile("/favicon.ico", ".static/favicon.ico")
+	router.StaticFile("/favicon.ico", "./static/favicon.ico")
 
 	// setup public routes
 	router.GET("/", IndexHandler)
 	router.POST("/checkin", CheckinHandler)
-	router.GET("/checkin/confirm-visit", ConfirmationPage)
+	router.GET("/checkin/confirm-visit/*option", ConfirmationPage)
 
 	router.Run(":8080")
 }
@@ -62,19 +62,29 @@ func CheckinHandler(c *gin.Context) {
 		IndexHandler(c)
 		return
 	}
-
 	c.HTML(
 		http.StatusOK,
 		"checkin.gohtml",
 		gin.H{
 			"StudentInfo": studentList[id],
-			"Options":     options,
-			"Id":          id,
+			"Options":     database.Options,
+			"StudentId":   id,
 		},
 	)
 }
 
 func ConfirmationPage(c *gin.Context) {
+	// option - index in that option - id #
+	params := strings.Split(c.Param("option"), "/")
+	option := params[1]
+	ndx, err := strconv.Atoi(params[2])
+	if err != nil {
+		panic(err)
+	}
+	id := params[3]
+
+	database.CheckIn(database.Query{Id:id, Topic:option, Option:ndx})
+
 	c.HTML(
 		http.StatusOK,
 		"confirm-checkin.gohtml",
