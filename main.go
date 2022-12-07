@@ -25,7 +25,7 @@ func main() {
 	// load student data
 	studentList = make(map[string]Student)
 	LoadStudentList()
-	database.Init("./HelpDeskCheckInDatabase.db")
+	database.Init("\\\\hs-hyperhost-01\\tech3\\HighSchool\\Kiosk\\HelpDeskCheckInDatabase.db")
 
 	// Set the router as the default one shipped with Gin
 	router := gin.Default()
