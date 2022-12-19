@@ -20,12 +20,13 @@ type Student struct {
 }
 
 var studentList map[string]Student
+var workingPath string = "\\\\hs-hyperhost-01\\tech3\\HighSchool\\Kiosk\\"
 
 func main() {
 	// load student data
 	studentList = make(map[string]Student)
 	LoadStudentList()
-	database.Init("\\\\hs-hyperhost-01\\tech3\\HighSchool\\Kiosk\\HelpDeskCheckInDatabase.db")
+	database.Init(workingPath + "HelpDeskCheckInDatabase.db")
 
 	// Set the router as the default one shipped with Gin
 	router := gin.Default()
@@ -83,17 +84,20 @@ func ConfirmationPage(c *gin.Context) {
 	}
 	id := params[3]
 
-	database.CheckIn(database.Query{Id:id, Topic:option, Option:ndx})
+	database.CheckIn(database.Query{Id: id, Topic: option, Option: ndx})
 
 	c.HTML(
 		http.StatusOK,
 		"confirm-checkin.gohtml",
 		"Thank you",
 	)
+
+	student := studentList[id]
+	print("\n" + student.FName + " " + student.LName + " has checked in.\n")
 }
 
 func LoadStudentList() {
-	file, err := os.Open("./static/AllStudents.csv")
+	file, err := os.Open(workingPath + "AllStudents.csv")
 	if err != nil {
 		panic(err)
 	}

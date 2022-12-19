@@ -21,7 +21,7 @@ var Options map[string][]string
 
 func Init(filename string) error {
 	Options = map[string][]string{
-		"Borrow a Device": {"Forgot device at home", "Forgot charger at home", "Lost Charger"},
+		"Borrow a Device": {"Forgot device at home", "Forgot charger at home", "Lost Charger", "I don't have a school device"},
 		"IT Help":         {"Software Install", "Wifi help", "Other"},
 		"Broken Device":   {"Broken Screen", "Won't turn on/charge", "Broken elsewhere"},
 	}
@@ -68,17 +68,23 @@ func queryBorrow(id string, reason int) {
 		reasonCol = "ForgotCharger"
 	case 2:
 		reasonCol = "LostCharger"
+	case 3:
+		reasonCol = "NotIssuedDevice"
 	}
 	query := fmt.Sprintf("SELECT ID FROM BorrowDevice WHERE id='%s'", id)
 	result, err := db.Query(query)
 	exists := ""
+
+	if err != nil {
+		panic(err)
+	}
 
 	for result.Next() {
 		result.Scan(&exists)
 	}
 
 	if exists == "" {
-		query = fmt.Sprintf("INSERT INTO BorrowDevice VALUES ('%s', '0', '0', '0')", id)
+		query = fmt.Sprintf("INSERT INTO BorrowDevice VALUES ('%s', '0', '0', '0', '0')", id)
 		_, err = db.Exec(query)
 		if err != nil {
 			panic(err)
@@ -94,6 +100,12 @@ func queryBorrow(id string, reason int) {
 }
 
 func queryBroken(id string, reason int) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered. Error:\n", r)
+		}
+	}()
+
 	// map reason to column
 	reasonCol := ""
 
